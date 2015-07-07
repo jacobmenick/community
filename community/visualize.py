@@ -1,21 +1,14 @@
-# visualize communities detected. 
+
+# visualize communities detected.
+
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-# get only unique values (oops!)
-"""
-_adj_dict = {k:list(set(v)) for k,v in _adj_dict.items()}
-_pats = sorted(list(set(_adj_dict.keys()+
-                        [x for xs in list(_adj_dict.values()) for x in xs]
-                    )))
-"""
-
 def _test_scheme(colors,show=True,savefn=None):
     """
-    Tests a color scheme (list of colors) by plotting equally spaced in a row, 
-    one for each color. 
+    Tests a color scheme (list of colors) by plotting equally spaced in a row,
+    one for each color.
     """
     fig = plt.figure()
     fig.set_size_inches(18.5,10.5)
@@ -56,8 +49,8 @@ def discrete_color_scheme(n=10,home_color=(193,60,35)):
     """
     Generate a color scheme based on n colors evenly space around the color wheel,
     in terms of angle. The home_color is the default starting point, which is
-    cyan, in hsl notation. We can divide the 2(pi) radians by n to get the angle offset. 
-    Then the angles are given by (start_angle) + (2*pi*i)/n as i varies from 0 to n-1. 
+    cyan, in hsl notation. We can divide the 2(pi) radians by n to get the angle offset.
+    Then the angles are given by (start_angle) + (2*pi*i)/n as i varies from 0 to n-1.
     """
     angle_offset = 360./n
     home_angle, sat, lum = home_color
@@ -72,13 +65,13 @@ def get_graph(adj_dict):
     # hard coded for now :( dictionaries are not ordered...
     G.graph['ancestor'] = 4723129
     G.add_nodes_from(sorted(list(set(
-        adj_dict.keys()+
+        list(adj_dict.keys()) +
         [x for xs in list(adj_dict.values()) for x in xs]
     ))))
     for parent,children in adj_dict.items():
         for child in children:
             G.add_edge(parent,child)
     return G
-    
-    
+
+
 
