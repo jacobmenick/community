@@ -1,3 +1,6 @@
+import numpy as np
+from community.detect import get_num_stubs, get_adjacency_matrix, get_initial_S
+
 def modularity(A, S):
     """
     computes modularity, Q, where Q = 1/2m * Tr(S^t B S)
@@ -54,7 +57,7 @@ def get_test_initial_S(which_set, num_nodes):
     return S
 
 def get_test_adj_dict(which_dict):
-    if which_set == 'wikipedia':
+    if which_dict == 'wikipedia':
         # from the wikipedia on modularity
         adj_dict = {
                1:  [2,3,10],
@@ -69,7 +72,7 @@ def get_test_adj_dict(which_dict):
                10: [1,4,7],
                }
         return adj_dict
-    elif which_set == 'tester':
+    elif which_dict == 'tester':
         adj_dict = {
                 1: [2,3,4],
                 2: [1,3],
@@ -80,7 +83,7 @@ def get_test_adj_dict(which_dict):
                 }
         return adj_dict
     else:
-        raise RuntimeError('%s is not a set we have' % which_set)
+        raise RuntimeError('%s is not a set we have' % which_dict)
 
 def time_tests():
     def time_function(f, arg1=None, arg2=None, arg3=None):
@@ -100,23 +103,25 @@ def time_tests():
     print('running time tests')
 
     # SETUP
-    adj_dict_which_set = 'patents'
+    adj_dict_which_set = 'wikipedia'
     # adj_dict_which_set = 'wikipedia'
-    adj_dict = get_adj_dict(adj_dict_which_set)
+    adj_dict = get_test_adj_dict(adj_dict_which_set)
 
     # time get_adjacency_matrix
-    A, time_elapsed = time_function(get_adjaceny_matrix, adj_dict)
+    A, time_elapsed = time_function(get_adjacency_matrix, adj_dict)
     print ('get_adjaceny_matrix: %f' % time_elapsed)
 
     num_nodes = A.shape[0]
-    S = get_initial_S('generic', num_nodes)
+    S = get_initial_S(num_nodes)
 
     # time get_B
     B, time_elapsed = time_function(get_B, A)
     print ('get_B: %f' % time_elapsed)
 
     #time modularity
-    Q, time_elapsed = time_function(modularity, A, S, B)
+    Q, time_elapsed = time_function(modularity, A, S)
     print ('modularity: %f' % time_elapsed)
 
 
+if __name__ == '__main__':
+    time_tests()

@@ -1,22 +1,15 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
-from community.data import get_pate
+from community.data import get_patent_adj
 import numpy as np
 
 # good resource
 # http://vw.indiana.edu/netsci06/conf-slides/conf-mon/netsci-talk-mark-newman.pdf
 
-def get_adj_dict():
+# Helper Functions
+def get_adjacency_matrix(adj_dict, directed = False):
     """
-    returns an adjacency matrix where keys are nodes and value is a list
-    of nodes which the key_node has an edge to
-    i.e. for patents, keys are patent numbers and value is a list of
-    patents which cite it
-    """
-    return np.load('alex_adj.p', mmap_mode='r')
-
-def get_adjaceny_matrix(adj_dict):
-    """
-    converts an adjacency dictionary into a symmetric matrix.
+    converts an adjacency dictionary into a symmetric adjacency matrix,
+    if the directed flag is False, otherwise not. 
     """
     flattened_values= [x for xs in list(adj_dict.values()) for x in xs]
     nodes = sorted(list(set(list(adj_dict.keys())+flattened_values)))
@@ -30,20 +23,12 @@ def get_adjaceny_matrix(adj_dict):
                     flag = True
             elif node2 in adj_dict and node1 in adj_dict[node2]:
                     flag = True
-            A[i,j] = A[j,i] = 1 if flag else 0
+            if not directed:
+                A[i,j] = A[j,i] = 1 if flag else 0
+            else:
+                if flag: 
+                    A[i,j] = 1
     return A
-
-def convert_communities_to_patents(adj_dict, communities):
-    flattened_values = [x for xs in list(adj_dict.values()) for x in xs]
-    nodes = sorted(list(set(list(adj_dict.keys()) + flattened_values)))
-    def convert_to_patent(idx):
-        return nodes[idx]
-    r = [list(map(convert_to_patent, community)) for community in communities]
-
-    return r
-c = convert_communities_to_patents
-
-
 
 def get_initial_S(num_nodes):
     """
@@ -179,38 +164,56 @@ def delta_modularity(node_i, community, num_stubs, A, S):
     cum_sum = cum_sum / num_stubs
     return cum_sum
 
-def run():
-    """
-    Main running function for algorithm.
-    Runs phase1 and then phase2. rinse and repeat while necessary
-    """
-    adj_dict = get_adj_dict()
-    A = get_adjaceny_matrix(adj_dict)
-    num_nodes = A.shape[0]
-    S = get_initial_S(num_nodes)
+class CommunityDetector(object):
+    def __init__(self, adj_dict):
+        # adj_dict is an adjacencty list of node: neighbors. 
+        # make sure adj_dict has no duplicates. 
+        self.adj_dict = {k:list(set(v)) for (k,v) in adj_dict.items()}
+        # flatten the adjacency dict to get a list of all nodes. 
+        flat_vals = [x for xs in adj_dict.values() for x in xs]
+        self.nodes = sorted(list(set(adj_dict.keys() + flat_vals)))
+        self.A = get_adjacency_matrix(self.adj_dict)
 
+    def _get_node_by_idx(self, idx):
+        return self.nodes[idx]
 
-    counter = 0
-    # node_comm_associations is a list containing
-    # jwhich nodes are in which communities
-    # e.g say node 1 and 2 are in a community and node 3 in a diff. community
-    # then node_comm_associations = [[1,2], [3]]
-    node_comm_associations = [[i] for i in range(A.shape[0])]
-    while True:
-        print ('go counter: %d' % counter)
-        counter+=1
-        S, wasChanged = phase1(A,S)
-        if wasChanged == False:
-            break
-        A, S, node_comm_associations = phase2(A, S, node_comm_associations)
+    def run(self, node_names = True, verbose = True):
+        A = self.A.copy()
+        num_nodes = A.shape[0]
+        S = get_initial_S(num_nodes)
+        
+        counter = 0
+        # node_comm_associations is a list containing
+        # jwhich nodes are in which communities
+        # e.g say node 1 and 2 are in a community and node 3 in a diff. community
+        # then node_comm_associations = [[1,2], [3]]
+        node_comm_associations = [[i] for i in range(A.shape[0])]
+        while True:
+            print ('go counter: %d' % counter)
+            counter+=1
+            S, wasChanged = phase1(A,S)
+            if wasChanged == False:
+                break
+            A, S, node_comm_associations = phase2(A, S, node_comm_associations)
+            
+        communities = node_comm_associations
 
-    communities = convert_communities_to_patents(adj_dict, node_comm_associations)
+        if node_names:
+            communities = [
+                map(
+                    lambda x: self._get_node_by_idx(x), 
+                    community)
+                for community in communities
+            ]
 
-    for c in communities:
-        print(c)
-    return communities
+        if verbose:
+            for c in communities:
+                print(c)
+        return communities
 
 if __name__ == '__main__':
+    pats = get_patent_adj()
+    c = CommunityDetector(pats)
     print('running')
-    run()
+    communities = c.run(verbose=True)
 
