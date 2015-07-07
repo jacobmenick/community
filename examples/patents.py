@@ -25,7 +25,7 @@ node_colors = [colors[community_lookup[node]] for node in G.nodes()]
 
 # Set the ancestor to its own color. 
 node_colors[G.nodes().index(G.graph['ancestor'])] = colors[n_communities]
-nx.draw(G, cmap=plt.get_cmap('jet'), node_color=node_colors)
+nx.draw_spring(G, cmap=plt.get_cmap('jet'), node_color=node_colors, node_size=100)
 
 
 
