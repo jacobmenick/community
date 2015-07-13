@@ -62,8 +62,6 @@ def discrete_color_scheme(n=10,home_color=(193,60,35)):
 def get_graph(adj_dict):
     # get unique set of nodes
     G = nx.Graph()
-    # hard coded for now :( dictionaries are not ordered...
-    G.graph['ancestor'] = 4723129
     G.add_nodes_from(sorted(list(set(
         list(adj_dict.keys()) +
         [x for xs in list(adj_dict.values()) for x in xs]
