@@ -10,7 +10,7 @@ detector = detect.CommunityDetector(patent_adj)
 communities = detector.run()
 n_communities = len(communities)
 
-Build a lookup table for node to color.
+# Build a lookup table for node to color.
 community_lookup = {}
 for i,c in enumerate(communities):
     for pno in c:
@@ -25,8 +25,9 @@ node_colors = [colors[community_lookup[node]] for node in G.nodes()]
 
 # Set the ancestor to its own color.
 node_colors[G.nodes().index(G.graph['ancestor'])] = colors[n_communities]
+nx.draw(G)
 nx.draw_spring(G, cmap=plt.get_cmap('jet'), node_color=node_colors, node_size=100)
-
+plt.savefig('graph.png')
 
 
 
