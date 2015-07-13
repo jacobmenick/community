@@ -1,6 +1,7 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
-from community.data import get_patent_adj
+import copy
 import numpy as np
+from community.data import get_patent_adj
 
 class CommunityDetector(object):
     def __init__(self, adj_dict):
@@ -53,10 +54,6 @@ class CommunityDetector(object):
                     if flag:
                         A[i,j] = 1
         return A
-
-    # TODO do we need this?
-    def _get_node_by_idx(self, idx):
-        return self.nodes[idx]
 
     def delta_modularity(self, node_i, community):
         """
@@ -114,11 +111,12 @@ class CommunityDetector(object):
 
                 # remove node from its former community
                 self.S[i, cur_community] = 0
+
+                best_delta_Q = self.delta_modularity(i, cur_community)
+
                 # find best delta Q for all other communities
-                best_delta_Q = -10.0
                 for j, _ in enumerate(S_row):
                     delta_Q = self.delta_modularity(i, j)
-                    delta_Q = -1
                     if delta_Q > best_delta_Q:
                         best_delta_Q = delta_Q
                         best_community = j
@@ -159,7 +157,6 @@ class CommunityDetector(object):
                     for comm_j_node in comm_j_nodes:
                         edge_sum += self.A[comm_i_node, comm_j_node]
                 new_A[i,j] = edge_sum
-            new_A[i,i] = 0.5 * new_A[i,i]
 
         # update node_comm_associations
         new_node_comm_associations = []
@@ -193,12 +190,12 @@ class CommunityDetector(object):
                 break
             self.phase2()
 
-        self.communities = self.node_comm_associations.copy()
+        self.communities = copy.deepcopy(self.node_comm_associations)
 
         if node_names:
             self.communities = [
                 list(map(
-                    lambda x: self._get_node_by_idx(x),
+                    lambda x: self.nodes[x],
                     community))
                 for community in self.communities
             ]
@@ -208,9 +205,4 @@ class CommunityDetector(object):
                 print(c)
         return self.communities
 
-if __name__ == '__main__':
-    pats = get_patent_adj()
-    c = CommunityDetector(pats)
-    print('running')
-    communities = c.run(verbose=True)
 
