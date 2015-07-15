@@ -157,7 +157,7 @@ class CommunityDetector(object):
                     for comm_j_node in comm_j_nodes:
                         edge_sum += self.A[comm_i_node, comm_j_node]
                 new_A[i,j] = edge_sum
-
+#            new_A[i,i] *= 0.5
         # update node_comm_associations
         new_node_comm_associations = []
 
