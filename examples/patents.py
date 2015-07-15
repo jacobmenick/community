@@ -10,7 +10,7 @@ detector = detect.CommunityDetector(patent_adj)
 communities = detector.run()
 n_communities = len(communities)
 
-# Build a lookup table for node to color.
+#Build a lookup table for node to color.
 community_lookup = {}
 for i,c in enumerate(communities):
     for pno in c:
@@ -21,6 +21,7 @@ colors = visualize.discrete_color_scheme(n_communities+1)
 
 # Get a graph from the adjacency list.
 G = visualize.get_graph(patent_adj)
+G.graph['ancestor'] = 4723129
 node_colors = [colors[community_lookup[node]] for node in G.nodes()]
 
 # Set the ancestor to its own color.

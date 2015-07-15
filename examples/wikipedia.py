@@ -35,14 +35,14 @@ for i,c in enumerate(communities):
     for pno in c:
         community_lookup[pno] = i
 
-colors = visualize.discrete_color_scheme(n_communities+1)
+colors = visualize.discrete_color_scheme(n_communities)
 
 
 # Get a graph from the adjacency list.
-G = visualize.get_graph(patent_adj)
+G = visualize.get_graph(wiki_adj_dict)
 node_colors = [colors[community_lookup[node]] for node in G.nodes()]
 
 # Set the ancestor to its own color.
-node_colors[G.nodes().index(G.graph['ancestor'])] = colors[n_communities]
+#node_colors[G.nodes().index(G.graph['ancestor'])] = colors[n_communities]
 nx.draw(G, cmap=plt.get_cmap('jet'), node_color=node_colors)
 #
