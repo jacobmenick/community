@@ -32,3 +32,4 @@ nx.draw(G, nx.spring_layout(G, iterations=10000), cmap=plt.get_cmap('jet'), node
 
 
 
+

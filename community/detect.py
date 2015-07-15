@@ -30,8 +30,9 @@ class CommunityDetector(object):
         np.fill_diagonal(self.S, 1)
 
         self.node_comm_associations = [[i] for i in range(len(self.nodes))]
-        self.num_stubs = np.sum(self.A)
-
+    @property
+    def num_stubs(self):
+        return np.sum(self.A)
 
     def get_adjacency_matrix(self, nodes, directed=False):
         """
@@ -71,12 +72,13 @@ class CommunityDetector(object):
             """
             returns k_i, the number of stubs that a node has, aka its outdegree
             """
-            if node_idx in k_dict:
-                return k_dict[node_idx]
-            else:
-                val =  np.sum(self.A[node_idx])
-                k_dict[node_idx] = val
-                return val
+            return np.sum(self.A[node_idx])
+            # if node_idx in k_dict:
+            #     return k_dict[node_idx]
+            # else:
+            #     val =  np.sum(self.A[node_idx])
+            #     k_dict[node_idx] = val
+            #     return val
 
         cum_sum = 0
         # loop over members of community
@@ -157,7 +159,9 @@ class CommunityDetector(object):
                     for comm_j_node in comm_j_nodes:
                         edge_sum += self.A[comm_i_node, comm_j_node]
                 new_A[i,j] = edge_sum
-#            new_A[i,i] *= 0.5
+            # I think this should be commented out
+            new_A[i,i] = 0.5 * new_A[i,i]
+
         # update node_comm_associations
         new_node_comm_associations = []
 
@@ -189,7 +193,6 @@ class CommunityDetector(object):
             if wasChanged == False:
                 break
             self.phase2()
-
         self.communities = copy.deepcopy(self.node_comm_associations)
 
         if node_names:
