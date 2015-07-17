@@ -160,7 +160,7 @@ class CommunityDetector(object):
                         edge_sum += self.A[comm_i_node, comm_j_node]
                 new_A[i,j] = edge_sum
             # I think this should be commented out
-            new_A[i,i] = 0.5 * new_A[i,i]
+#            new_A[i,i] = 0.5 * new_A[i,i]
 
         # update node_comm_associations
         new_node_comm_associations = []
