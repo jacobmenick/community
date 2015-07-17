@@ -3,9 +3,8 @@ import numpy as np
 from community.util import adj_dict_to_adj_mat, modularity, get_B, make_diagonal
 from community.data import get_patent_adj
 from community.detect import CommunityDetector
-# from community.detect import get_num_stubs, get_adjacency_matrix, get_initial_S
 
-#global
+# global vars - toy examples.
 _wiki_adj_dict = {
                1:  [2,3,10],
                2:  [1,3],
@@ -50,10 +49,8 @@ class GenericTester(unittest.TestCase):
         self.patent_A = adj_dict_to_adj_mat(self.patent_adj) 
         self.patent_S = make_diagonal(self.patent_A.shape[0])
 
+# Right now, makes no assertions about the output. Only tests that they actually run. 
 class TestHelpers(GenericTester):
-    """
-    Currently, we're only testing that the helpers run.
-    """
     def TestComputeModularity(self):
         modularity(self.wiki_A, self.wiki_S)
         modularity(self.gener_A, self.gener_S)
@@ -72,4 +69,5 @@ class TestCommunityDetectorMethods(GenericTester):
         self.patent_detector = CommunityDetector(self.patent_adj)
     
     def TestWikiCommunities(self):
+        """ Make sure that the toy wikipedia network has 3 communities. """
         self.assertEqual(3, len(self.wiki_detector.run()))
