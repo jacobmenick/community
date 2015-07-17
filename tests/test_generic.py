@@ -1,22 +1,11 @@
 import unittest
 import numpy as np
 from community.util import adj_dict_to_adj_mat, modularity, get_B, make_diagonal
-from community.data import get_patent_adj
+from community.data import get_patent_adj, get_wiki_adj
 from community.detect import CommunityDetector
 
 # global vars - toy examples.
-_wiki_adj_dict = {
-               1:  [2,3,10],
-               2:  [1,3],
-               3:  [1,2],
-               4:  [5,6,10],
-               5:  [4,6],
-               6:  [4,5],
-               7:  [8,9,10],
-               8:  [7,9],
-               9:  [7,8],
-               10: [1,4,7],
-               }
+
 _wiki_init_S = np.array(
     [[1,0,0] for _ in range(3)] +
     [[0,1,0] for _ in range(3)] + 
@@ -39,7 +28,7 @@ _tester_init_S = np.array(
 
 class GenericTester(unittest.TestCase):
     def setUp(self):
-        self.wiki_adj = _wiki_adj_dict
+        self.wiki_adj = get_wiki_adj()
         self.wiki_A = adj_dict_to_adj_mat(self.wiki_adj)
         self.wiki_S = _wiki_init_S
         self.gener_adj = _tester_adj_dict

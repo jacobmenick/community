@@ -67,3 +67,14 @@ def get_B(A):
         for j in range(i+1):
             B[i,j] = B[j,i] = A[i,j] - float((edge_deg(i) * edge_deg(j)) / (num_stubs))
     return B
+
+def get_community_lookup(communities):
+    """ From a list of communities containing node names,
+    get a dictionary from node to community index. """
+    community_lookup = {}
+    for i,c in enumerate(communities):
+        for label in c:
+            community_lookup[label] = i
+    return community_lookup
+    
+    
